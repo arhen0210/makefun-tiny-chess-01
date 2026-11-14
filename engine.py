@@ -248,10 +248,11 @@ def evaluate(board):
     for side in (0, 1):
         if bishops[side] > 1:
             score += 30 if side == 0 else -30
-        # A king that has not castled is worth a little less.
-        home = 4 if side == 0 else 60
-        if kings[side] == home:
-            score += -20 if side == 0 else 20
+        # A castled king is safer than one still in the middle.
+        home = 6 if side == 0 else 62
+        other = 2 if side == 0 else 58
+        if kings[side] == home or kings[side] == other:
+            score += 30 if side == 0 else -30
     return score
 
 
