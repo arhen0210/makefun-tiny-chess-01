@@ -82,7 +82,7 @@ def moves(board, side, ep):
             step = 8 - 16 * side
             ahead = square + step
             if 0 <= ahead < 64 and not board[ahead]:
-                if rank == 7 - 7 * side:
+                if ahead >> 3 == 7 - 7 * side:
                     add((square, ahead, 5))
                     add((square, ahead, 4))
                     add((square, ahead, 3))
