@@ -220,38 +220,34 @@ def evaluate(board):
     """Material and position, from white's point of view."""
     score = 0
     bishops = [0, 0]
-    kings = [0, 0]
     for square in range(64):
         piece = board[square]
         if not piece:
             continue
         kind = piece & 7
-        if kind == 6:
-            kings[piece >> 3] = square
-            continue
         side = piece >> 3
         rank, file = square >> 3, square & 7
         if side:
-            rank = 7 - rank
-        value = VALUE[kind]
-        if kind == 2 or kind == 3:
-            value += 4 - abs(2 * file - 7) - abs(2 * rank - 7)
-        elif kind == 1:
-            value += rank * 8
-        elif kind == 4:
-            value += rank * 3
-        elif kind == 5:
-            value += 1
-        if kind == 3:
-            bishops[side] += 1
+            rank, file = 7 - rank, 7 - file
+        if kind == 6:
+            # A king belongs on its back rank, and best of all in a corner.
+            value = -18 * rank
+            if rank == 0 and file in (2, 6):
+                value += 12
+        else:
+            value = VALUE[kind]
+            centre = 4 - abs(2 * file - 7) - abs(2 * rank - 7)
+            if kind == 1:
+                value += rank * 2 + centre // 2
+            elif kind == 2 or kind == 3:
+                value += centre
+            elif kind == 4:
+                value += 6 if rank == 6 else 0
+            if kind == 3:
+                bishops[side] += 1
         score += value if side == 0 else -value
     for side in (0, 1):
         if bishops[side] > 1:
-            score += 30 if side == 0 else -30
-        # A castled king is safer than one still in the middle.
-        home = 6 if side == 0 else 62
-        other = 2 if side == 0 else 58
-        if kings[side] == home or kings[side] == other:
             score += 30 if side == 0 else -30
     return score
 
